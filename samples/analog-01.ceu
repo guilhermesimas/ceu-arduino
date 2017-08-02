@@ -49,7 +49,7 @@ par do
 with
 	loop do
 		emit AN_REQ_01;
-		// await 1ms;
+		await 1ms;
 		emit AN_REQ_00;
 		await 1000ms;
 	end
