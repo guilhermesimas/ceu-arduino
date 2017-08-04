@@ -26,7 +26,7 @@ par do
 	loop do
 		par/and do
 			_Serial.println("Trail AN00 sleep");
-			var int value = await AN_00 ;
+			var int value = await An_00() ;
 			_Serial.println("Trail AN00 awoke");			
 			if value > 500 then
 				emit PIN_13(HIGH);
@@ -36,7 +36,7 @@ par do
 			end
 		with
 			_Serial.println("Trail AN01 sleep");
-			var int value = await AN_01 ;
+			var int value = await An_01() ;
 			_Serial.println("Trail AN01 awoke");			
 			if value > 700 then
 				emit PIN_07(HIGH);

@@ -89,44 +89,51 @@ native/pos do
     }
 end
 
-event void adc_done;
+input void ADC_DONE;
 
 vector[6] bool available;
 vector[6] bool busy;
 vector[6] int sample;
 
-code/await AN (var int channel) do
-    _ceu_dbg_assert(busy[channel]!=true);
-    busy[channel] = true;
-    finalize with
-        busy[channel] = false;
+code/await An (var int channel) -> int do
+    _ceu_dbg_assert(outer.busy[channel]!=true);
+    outer.busy[channel] = true;
+    do finalize with
+        outer.busy[channel] = false;
     end
     loop do
-        if available[channel] == true then
-            available[channel] = false;
-            return sample[channel];
+        if outer.available[channel] == true then
+            outer.available[channel] = false;
+            var int value = outer.sample[channel];
+            escape value;
         end
-        await adc_done;
+        await ADC_DONE;
     end
 end
 
-code/await AN_00 do
-    return await AN(0);
+code/await An_00 (void) -> int do
+    var int ret = await An(0); 
+    escape ret;
 end
-code/await AN_01 do
-    return await AN(1);
+code/await An_01 (void) -> int do
+    var int ret = await An(1); 
+    escape ret;
 end
-code/await AN_02 do
-    return await AN(2);
+code/await An_02 (void) -> int do
+    var int ret = await An(2); 
+    escape ret;
 end
-code/await AN_03 do
-    return await AN(3);
+code/await An_03 (void) -> int do
+    var int ret = await An(3); 
+    escape ret;
 end
-code/await AN_04 do
-    return await AN(4);
+code/await An_04 (void) -> int do
+    var int ret = await An(4); 
+    escape ret;
 end
-code/await AN_05 do
-    return await AN(5);
+code/await An_05 (void) -> int do
+    var int ret = await An(5); 
+    escape ret;
 end
 
 spawn async/isr [_ADC_vect_num,0] do
@@ -136,11 +143,11 @@ spawn async/isr [_ADC_vect_num,0] do
     _Serial.println(_analogRead_read());
     _clear_elem(channel);
     // Sets conversion ready
-    available[channel] = true;
+    outer.available[channel] = true;
     // Sets value in vector
-    sample[channel] = true;
-    // Emits adc_done 
-    emit adc_done;
+    outer.sample[channel] = _analogRead_read();
+    // Emits ADC_DONE 
+    emit ADC_DONE;
     // gets next conversion in queue
     var u8 next = _dequeue();
     // if none, clear the interrupt bit
