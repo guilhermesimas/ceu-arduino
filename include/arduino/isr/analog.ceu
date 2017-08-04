@@ -91,12 +91,13 @@ end
 
 input void ADC_DONE;
 
-vector[6] bool available;
-vector[6] bool busy;
+vector[6] bool available = [false,false,false,false,false,false];
+vector[6] bool busy = [false,false,false,false,false,false];
 vector[6] int sample;
 
 code/await An (var int channel) -> int do
-    _ceu_dbg_assert(outer.busy[channel]!=true);
+    _Serial.print("An()->"); _Serial.println(channel);
+    _ceu_dbg_assert((outer.busy[channel])!=true);
     outer.busy[channel] = true;
     do finalize with
         outer.busy[channel] = false;
